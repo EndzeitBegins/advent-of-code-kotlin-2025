@@ -10,6 +10,13 @@ If you're stuck with Kotlin-specific questions or anything related to this templ
 - [Kotlin Slack][slack]
 - Template [issue tracker][issues]
 
+## Generate files for a day
+
+The Gradle task `generateDay` can be used to scaffold the directory and files for a given day.
+
+```shell
+./gradlew generateDay -Pday=6
+```
 
 [^aoc]:
     [Advent of Code][aoc] – An annual event of Christmas-oriented programming challenges started December 2015.
