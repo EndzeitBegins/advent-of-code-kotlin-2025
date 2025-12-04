@@ -4,29 +4,22 @@ import io.github.endzeitbegins.aoc2025.checkSolution
 import io.github.endzeitbegins.aoc2025.readInput
 
 private fun part1(input: String): Int {
-    val paperRollPositions = buildSet {
-        for ((y, line) in input.lines().withIndex()) {
-            for ((x, symbol) in line.withIndex()) {
-                if (symbol == '@') {
-                    this += x to y
-                }
-            }
-        }
-    }
+    val paperRollPositions = determinePaperRollPositions(input)
 
-    return paperRollPositions.count { position ->
-        val adjacentPositions = position.adjacentPositions
-
-        val neighbours = adjacentPositions.count { (x, y) ->
-            x to y in paperRollPositions
-        }
-
-        neighbours < 4
-    }
+    return determineAccessiblePaperRollPositions(paperRollPositions).size
 }
 
 private fun part2(input: String): Int {
-    return input.length
+    val initialPaperRollPositions = determinePaperRollPositions(input)
+    val paperRollPositions = initialPaperRollPositions.toMutableSet()
+
+    do {
+        val paperRollsToRemove = determineAccessiblePaperRollPositions(paperRollPositions)
+
+        paperRollPositions -= paperRollsToRemove
+    } while (paperRollsToRemove.isNotEmpty())
+
+    return initialPaperRollPositions.size - paperRollPositions.size
 }
 
 fun main() {
@@ -38,11 +31,29 @@ fun main() {
     println(part1(input))
 
     // part 2
-    // checkSolution(part2(testInput), 1)
-    // println(part2(input))
+    checkSolution(part2(testInput), 43)
+    println(part2(input))
 }
 
 private typealias Position = Pair<Int, Int>
+
+private fun determinePaperRollPositions(input: String): Set<Position> = buildSet {
+    for ((y, line) in input.lines().withIndex()) {
+        for ((x, symbol) in line.withIndex()) {
+            if (symbol == '@') {
+                this += x to y
+            }
+        }
+    }
+}
+
+private fun determineAccessiblePaperRollPositions(paperRollPositions: Set<Position>): List<Position> =
+    paperRollPositions.filter { position ->
+        position.adjacentPositions
+            .count { (x, y) ->
+                x to y in paperRollPositions
+            } < 4
+    }
 
 private val Position.adjacentPositions: Set<Position>
     get() {
